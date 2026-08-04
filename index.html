@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucas y Vale</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Menú Principal -->
+    <header>
+        <nav>
+            <ul class="menu-principal">
+                <li><a href="#galeria" class="nav-link">Galería</a></li>
+                <li><a href="#mensajes" class="nav-link">Mensajes</a></li>
+                <li><a href="#series" class="nav-link">Series</a></li>
+                
+                <!-- Submenú de Música (Botón directo a YouTube) -->
+                <li class="submenu">
+                    <span>🎵 Música</span>
+                    <div class="reproductor-desplegable">
+                        <p style="text-align:center; color:#e07ba9; font-weight:bold; margin-top:0; margin-bottom: 15px;">
+                            Nuestra Playlist 💖
+                        </p>
+                        <a href="https://youtube.com/playlist?list=PLRA6qU-Hu8DYQU_J6z512AHgJngHhRVWW" target="_blank" style="display: block; background-color: #f994c5; color: white; text-align: center; padding: 10px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.3s;">
+                            Abrir en YouTube ▶️
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Sección de Galería -->
+        <section id="galeria">
+            <h2>Nuestras Fotos</h2>
+            <input type="file" id="subir-foto" accept="image/*">
+            <button id="btn-subir">Subir Foto</button>
+            <div class="contenedor-fotos"></div>
+        </section>
+
+        <!-- Sección de Mensajes -->
+        <section id="mensajes">
+            <h2>Buzón de Mensajes</h2>
+            <textarea id="nuevo-mensaje" placeholder="Deja un mensaje..."></textarea>
+            <button id="btn-enviar">Enviar</button>
+            <div class="lista-mensajes"></div>
+        </section>
+
+        <!-- Sección de Series -->
+        <section id="series">
+            <h2>Nuestras Series</h2>
+            
+            <div class="controles-series">
+                <input type="text" id="nueva-serie" placeholder="Nombre de la serie...">
+                <button id="btn-agregar-serie">Agregar</button>
+            </div>
+
+            <div class="categorias-series">
+                <div class="categoria" id="por-ver">
+                    <h3>Por Ver</h3>
+                    <ul class="lista-series" id="lista-por-ver"></ul>
+                </div>
+                <div class="categoria" id="viendo">
+                    <h3>Viendo / No Completadas</h3>
+                    <ul class="lista-series" id="lista-viendo"></ul>
+                </div>
+                <div class="categoria" id="completadas">
+                    <h3>Completadas</h3>
+                    <ul class="lista-series" id="lista-completadas"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
