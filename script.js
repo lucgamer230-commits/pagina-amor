@@ -16,16 +16,18 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 /* ================================
-   SISTEMA DE LOGIN
+   SISTEMA DE LOGIN Y REGISTRO
 ================================ */
 const pantallaLogin = document.getElementById('pantalla-login');
 const appPrincipal = document.getElementById('app-principal');
 const emailLogin = document.getElementById('email-login');
 const passLogin = document.getElementById('pass-login');
 const btnIngresar = document.getElementById('btn-ingresar');
+const btnRegistrar = document.getElementById('btn-registrar'); // Botón de registro
 const errorLogin = document.getElementById('error-login');
 const btnSalir = document.getElementById('btn-salir');
 
+// Función para Ingresar
 btnIngresar.addEventListener('click', () => {
     const email = emailLogin.value.trim();
     const pass = passLogin.value.trim();
@@ -37,11 +39,41 @@ btnIngresar.addEventListener('click', () => {
 
     auth.signInWithEmailAndPassword(email, pass)
         .catch(error => {
-            errorLogin.textContent = "Datos incorrectos. Intenta de nuevo.";
-            console.error(error);
+            errorLogin.textContent = "Error: " + error.message;
+            console.error("Detalle técnico del error:", error);
         });
 });
 
+// Función para Registrarse
+btnRegistrar.addEventListener('click', () => {
+    const email = emailLogin.value.trim();
+    const pass = passLogin.value.trim();
+    
+    if(email === "" || pass === "") {
+        errorLogin.textContent = "Por favor llena ambos campos para registrarte.";
+        return;
+    }
+
+    if(pass.length < 6) {
+        errorLogin.textContent = "La contraseña debe tener al menos 6 caracteres.";
+        return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => {
+            console.log("¡Cuenta creada con éxito!");
+        })
+        .catch(error => {
+            if (error.code === 'auth/email-already-in-use') {
+                errorLogin.textContent = "Ese correo ya está registrado. Intenta ingresar.";
+            } else {
+                errorLogin.textContent = "Error al registrar: " + error.message;
+            }
+            console.error("Detalle técnico del error:", error);
+        });
+});
+
+// Función para Salir
 btnSalir.addEventListener('click', () => {
     auth.signOut();
 });
@@ -103,7 +135,6 @@ function cargarMensajesTiempoReal() {
               nuevoMensaje.textContent = data.texto;
               listaMensajesDiv.appendChild(nuevoMensaje);
           });
-          // Scroll hacia abajo automáticamente
           window.scrollTo(0, document.body.scrollHeight);
       });
 }
@@ -151,9 +182,9 @@ function cargarSeriesTiempoReal() {
           document.getElementById('lista-viendo').innerHTML = '';
           document.getElementById('lista-completadas').innerHTML = '';
           
-          data.porVer.forEach(nombre => document.getElementById('lista-por-ver').appendChild(crearElementoSerie(nombre)));
-          data.viendo.forEach(nombre => document.getElementById('lista-viendo').appendChild(crearElementoSerie(nombre)));
-          data.completadas.forEach(nombre => document.getElementById('lista-completadas').appendChild(crearElementoSerie(nombre)));
+          if(data.porVer) data.porVer.forEach(nombre => document.getElementById('lista-por-ver').appendChild(crearElementoSerie(nombre)));
+          if(data.viendo) data.viendo.forEach(nombre => document.getElementById('lista-viendo').appendChild(crearElementoSerie(nombre)));
+          if(data.completadas) data.completadas.forEach(nombre => document.getElementById('lista-completadas').appendChild(crearElementoSerie(nombre)));
           
           cargandoSeries = false;
       });
