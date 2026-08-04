@@ -7,72 +7,94 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Menú Principal -->
-    <header>
-        <nav>
-            <ul class="menu-principal">
-                <li><a href="#galeria" class="nav-link">Galería</a></li>
-                <li><a href="#mensajes" class="nav-link">Mensajes</a></li>
-                <li><a href="#series" class="nav-link">Series</a></li>
+    
+    <!-- PANTALLA DE LOGIN -->
+    <div id="pantalla-login" class="seccion-login">
+        <div class="caja-login">
+            <h2>Acceso Privado 💖</h2>
+            <input type="email" id="email-login" placeholder="Correo electrónico">
+            <input type="password" id="pass-login" placeholder="Contraseña">
+            <button id="btn-ingresar">Ingresar</button>
+            <p id="error-login" class="error-msg"></p>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPAL (Oculta hasta iniciar sesión) -->
+    <div id="app-principal" style="display: none;">
+        <!-- Menú Principal -->
+        <header>
+            <nav>
+                <ul class="menu-principal">
+                    <li><a href="#galeria" class="nav-link">Galería</a></li>
+                    <li><a href="#mensajes" class="nav-link">Mensajes</a></li>
+                    <li><a href="#series" class="nav-link">Series</a></li>
+                    
+                    <!-- Submenú de Música -->
+                    <li class="submenu">
+                        <span>🎵 Música</span>
+                        <div class="reproductor-desplegable">
+                            <p style="text-align:center; color:#e07ba9; font-weight:bold; margin-top:0; margin-bottom: 15px;">
+                                Nuestra Playlist 💖
+                            </p>
+                            <a href="https://youtube.com/playlist?list=PLRA6qU-Hu8DYQU_J6z512AHgJngHhRVWW" target="_blank" style="display: block; background-color: #f994c5; color: white; text-align: center; padding: 10px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.3s;">
+                                Abrir en YouTube ▶️
+                            </a>
+                        </div>
+                    </li>
+                    <li id="btn-salir" style="background-color: #ff6b6b;"><span>Salir 👋</span></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Sección de Galería -->
+            <section id="galeria">
+                <h2>Nuestras Fotos</h2>
+                <input type="file" id="subir-foto" accept="image/*">
+                <button id="btn-subir">Subir Foto</button>
+                <div class="contenedor-fotos"></div>
+                <p style="font-size: 12px; color: gray; text-align: center;">Las fotos se guardan temporalmente en tu dispositivo.</p>
+            </section>
+
+            <!-- Sección de Mensajes -->
+            <section id="mensajes">
+                <h2>Buzón de Mensajes</h2>
+                <textarea id="nuevo-mensaje" placeholder="Deja un mensaje..."></textarea>
+                <button id="btn-enviar">Enviar</button>
+                <div class="lista-mensajes" id="lista-mensajes"></div>
+            </section>
+
+            <!-- Sección de Series -->
+            <section id="series">
+                <h2>Nuestras Series</h2>
                 
-                <!-- Submenú de Música (Botón directo a YouTube) -->
-                <li class="submenu">
-                    <span>🎵 Música</span>
-                    <div class="reproductor-desplegable">
-                        <p style="text-align:center; color:#e07ba9; font-weight:bold; margin-top:0; margin-bottom: 15px;">
-                            Nuestra Playlist 💖
-                        </p>
-                        <a href="https://youtube.com/playlist?list=PLRA6qU-Hu8DYQU_J6z512AHgJngHhRVWW" target="_blank" style="display: block; background-color: #f994c5; color: white; text-align: center; padding: 10px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.3s;">
-                            Abrir en YouTube ▶️
-                        </a>
+                <div class="controles-series">
+                    <input type="text" id="nueva-serie" placeholder="Nombre de la serie...">
+                    <button id="btn-agregar-serie">Agregar</button>
+                </div>
+
+                <div class="categorias-series">
+                    <div class="categoria" id="por-ver">
+                        <h3>Por Ver</h3>
+                        <ul class="lista-series" id="lista-por-ver"></ul>
                     </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <!-- Sección de Galería -->
-        <section id="galeria">
-            <h2>Nuestras Fotos</h2>
-            <input type="file" id="subir-foto" accept="image/*">
-            <button id="btn-subir">Subir Foto</button>
-            <div class="contenedor-fotos"></div>
-        </section>
-
-        <!-- Sección de Mensajes -->
-        <section id="mensajes">
-            <h2>Buzón de Mensajes</h2>
-            <textarea id="nuevo-mensaje" placeholder="Deja un mensaje..."></textarea>
-            <button id="btn-enviar">Enviar</button>
-            <div class="lista-mensajes"></div>
-        </section>
-
-        <!-- Sección de Series -->
-        <section id="series">
-            <h2>Nuestras Series</h2>
-            
-            <div class="controles-series">
-                <input type="text" id="nueva-serie" placeholder="Nombre de la serie...">
-                <button id="btn-agregar-serie">Agregar</button>
-            </div>
-
-            <div class="categorias-series">
-                <div class="categoria" id="por-ver">
-                    <h3>Por Ver</h3>
-                    <ul class="lista-series" id="lista-por-ver"></ul>
+                    <div class="categoria" id="viendo">
+                        <h3>Viendo / No Completadas</h3>
+                        <ul class="lista-series" id="lista-viendo"></ul>
+                    </div>
+                    <div class="categoria" id="completadas">
+                        <h3>Completadas</h3>
+                        <ul class="lista-series" id="lista-completadas"></ul>
+                    </div>
                 </div>
-                <div class="categoria" id="viendo">
-                    <h3>Viendo / No Completadas</h3>
-                    <ul class="lista-series" id="lista-viendo"></ul>
-                </div>
-                <div class="categoria" id="completadas">
-                    <h3>Completadas</h3>
-                    <ul class="lista-series" id="lista-completadas"></ul>
-                </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase SDK (Librerías oficiales) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
     <script src="script.js"></script>
 </body>

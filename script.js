@@ -1,4 +1,68 @@
 /* ================================
+   CONFIGURACIÓN FIREBASE
+================================ */
+const firebaseConfig = {
+    apiKey: "AIzaSyCVwvcdZzyNZvF0K-Iz1uqhzch_XUx1xY0",
+    authDomain: "app-amor-2c5fb.firebaseapp.com",
+    projectId: "app-amor-2c5fb",
+    storageBucket: "app-amor-2c5fb.firebasestorage.app",
+    messagingSenderId: "349564122691",
+    appId: "1:349564122691:web:7b6fb1cc608232af09c6f6"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ================================
+   SISTEMA DE LOGIN
+================================ */
+const pantallaLogin = document.getElementById('pantalla-login');
+const appPrincipal = document.getElementById('app-principal');
+const emailLogin = document.getElementById('email-login');
+const passLogin = document.getElementById('pass-login');
+const btnIngresar = document.getElementById('btn-ingresar');
+const errorLogin = document.getElementById('error-login');
+const btnSalir = document.getElementById('btn-salir');
+
+btnIngresar.addEventListener('click', () => {
+    const email = emailLogin.value.trim();
+    const pass = passLogin.value.trim();
+    
+    if(email === "" || pass === "") {
+        errorLogin.textContent = "Por favor llena ambos campos.";
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .catch(error => {
+            errorLogin.textContent = "Datos incorrectos. Intenta de nuevo.";
+            console.error(error);
+        });
+});
+
+btnSalir.addEventListener('click', () => {
+    auth.signOut();
+});
+
+// Vigilar si hay alguien conectado
+auth.onAuthStateChanged(user => {
+    if (user) {
+        pantallaLogin.style.display = 'none';
+        appPrincipal.style.display = 'block';
+        cargarMensajesTiempoReal();
+        cargarSeriesTiempoReal();
+    } else {
+        pantallaLogin.style.display = 'flex';
+        appPrincipal.style.display = 'none';
+        emailLogin.value = '';
+        passLogin.value = '';
+        errorLogin.textContent = '';
+    }
+});
+
+/* ================================
    NAVEGACIÓN DEL MENÚ (PESTAÑAS)
 ================================ */
 const enlacesMenu = document.querySelectorAll('.nav-link');
@@ -19,56 +83,49 @@ enlacesMenu.forEach(enlace => {
         mostrarSeccion(id);
     });
 });
-
-// Mostrar Galería por defecto al cargar
 mostrarSeccion('galeria');
 
-
 /* ================================
-   BUZÓN DE MENSAJES (GUARDADO LOCAL)
+   MENSAJES EN LA NUBE (FIRESTORE)
 ================================ */
 const btnEnviar = document.getElementById('btn-enviar');
 const inputMensaje = document.getElementById('nuevo-mensaje');
-const listaMensajesDiv = document.querySelector('.lista-mensajes');
+const listaMensajesDiv = document.getElementById('lista-mensajes');
 
-function guardarMensajes() {
-    const mensajes = [];
-    document.querySelectorAll('.mensaje-burbuja').forEach(msg => {
-        mensajes.push(msg.textContent);
-    });
-    localStorage.setItem('mensajes_amor', JSON.stringify(mensajes));
+function cargarMensajesTiempoReal() {
+    db.collection('mensajes').orderBy('timestamp')
+      .onSnapshot(snapshot => {
+          listaMensajesDiv.innerHTML = ''; 
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              const nuevoMensaje = document.createElement('div');
+              nuevoMensaje.classList.add('mensaje-burbuja');
+              nuevoMensaje.textContent = data.texto;
+              listaMensajesDiv.appendChild(nuevoMensaje);
+          });
+          // Scroll hacia abajo automáticamente
+          window.scrollTo(0, document.body.scrollHeight);
+      });
 }
-
-function cargarMensajes() {
-    const guardados = JSON.parse(localStorage.getItem('mensajes_amor') || '[]');
-    guardados.forEach(texto => {
-        const nuevoMensaje = document.createElement('div');
-        nuevoMensaje.classList.add('mensaje-burbuja');
-        nuevoMensaje.textContent = texto;
-        listaMensajesDiv.appendChild(nuevoMensaje);
-    });
-}
-cargarMensajes(); 
 
 btnEnviar.addEventListener('click', () => {
     const texto = inputMensaje.value.trim();
     if (texto !== "") {
-        const nuevoMensaje = document.createElement('div');
-        nuevoMensaje.classList.add('mensaje-burbuja');
-        nuevoMensaje.textContent = texto;
-        listaMensajesDiv.appendChild(nuevoMensaje);
+        db.collection('mensajes').add({
+            texto: texto,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
         inputMensaje.value = "";
-        guardarMensajes(); 
     }
 });
 
-
 /* ================================
-   SERIES (DRAG AND DROP + GUARDADO LOCAL)
+   SERIES EN LA NUBE (FIRESTORE)
 ================================ */
 const btnAgregarSerie = document.getElementById('btn-agregar-serie');
 const inputSerie = document.getElementById('nueva-serie');
 const categorias = document.querySelectorAll('.categoria');
+let cargandoSeries = false; 
 
 function crearElementoSerie(nombre) {
     const nuevaSerie = document.createElement('li');
@@ -83,7 +140,27 @@ function crearElementoSerie(nombre) {
     return nuevaSerie;
 }
 
-function guardarSeries() {
+function cargarSeriesTiempoReal() {
+    db.collection('datos').doc('series')
+      .onSnapshot(docSnap => {
+          if (!docSnap.exists) return;
+          cargandoSeries = true; 
+          const data = docSnap.data();
+          
+          document.getElementById('lista-por-ver').innerHTML = '';
+          document.getElementById('lista-viendo').innerHTML = '';
+          document.getElementById('lista-completadas').innerHTML = '';
+          
+          data.porVer.forEach(nombre => document.getElementById('lista-por-ver').appendChild(crearElementoSerie(nombre)));
+          data.viendo.forEach(nombre => document.getElementById('lista-viendo').appendChild(crearElementoSerie(nombre)));
+          data.completadas.forEach(nombre => document.getElementById('lista-completadas').appendChild(crearElementoSerie(nombre)));
+          
+          cargandoSeries = false;
+      });
+}
+
+function guardarSeriesEnNube() {
+    if (cargandoSeries) return; 
     const estadoSeries = {
         porVer: [], viendo: [], completadas: []
     };
@@ -91,31 +168,20 @@ function guardarSeries() {
     document.querySelectorAll('#lista-viendo .serie-item').forEach(el => estadoSeries.viendo.push(el.textContent));
     document.querySelectorAll('#lista-completadas .serie-item').forEach(el => estadoSeries.completadas.push(el.textContent));
     
-    localStorage.setItem('series_amor', JSON.stringify(estadoSeries));
+    db.collection('datos').doc('series').set(estadoSeries);
 }
-
-function cargarSeries() {
-    const guardadas = JSON.parse(localStorage.getItem('series_amor'));
-    if (guardadas) {
-        guardadas.porVer.forEach(nombre => document.getElementById('lista-por-ver').appendChild(crearElementoSerie(nombre)));
-        guardadas.viendo.forEach(nombre => document.getElementById('lista-viendo').appendChild(crearElementoSerie(nombre)));
-        guardadas.completadas.forEach(nombre => document.getElementById('lista-completadas').appendChild(crearElementoSerie(nombre)));
-    }
-}
-cargarSeries(); 
 
 btnAgregarSerie.addEventListener('click', () => {
     const nombreSerie = inputSerie.value.trim();
     if (nombreSerie !== "") {
         document.getElementById('lista-por-ver').appendChild(crearElementoSerie(nombreSerie));
         inputSerie.value = ""; 
-        guardarSeries(); 
+        guardarSeriesEnNube(); 
     }
 });
 
 categorias.forEach(categoria => {
     categoria.addEventListener('dragover', (e) => e.preventDefault());
-
     categoria.addEventListener('drop', (e) => {
         e.preventDefault();
         const idSerie = e.dataTransfer.getData('text/plain');
@@ -123,14 +189,13 @@ categorias.forEach(categoria => {
         const ul = categoria.querySelector('ul');
         if (serieArrastrada && ul) {
             ul.appendChild(serieArrastrada);
-            guardarSeries(); 
+            guardarSeriesEnNube(); 
         }
     });
 });
 
-
 /* ================================
-   GALERÍA DE FOTOS 
+   GALERÍA DE FOTOS (LOCAL TEMPORAL)
 ================================ */
 const btnSubir = document.getElementById('btn-subir');
 const inputFoto = document.getElementById('subir-foto');
