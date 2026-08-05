@@ -1,5 +1,89 @@
+/* Variables de colores */
+:root {
+    --rosa-principal: #ff9a9e;
+    --rosa-oscuro: #e07ba9;
+    --blanco-transparente: rgba(255, 255, 255, 0.9);
+    --fondo-app: #fff0f5; 
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--fondo-app);
+}
+
 /* ================================
-   LOGIN
+   SISTEMA DE PESTAÑAS
+================================ */
+main section {
+    display: none; 
+    padding: 30px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+main section.activa {
+    display: block; 
+    animation: aparecer 0.4s ease-in-out;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   MENÚ PRINCIPAL
+================================ */
+header {
+    background-color: var(--rosa-principal);
+    padding: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.menu-principal {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-principal li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.menu-principal li a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-salir-menu {
+    background-color: #ff4757;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-salir-menu:hover {
+    background-color: #ff6b81;
+}
+
+/* ================================
+   PANTALLA DE LOGIN
 ================================ */
 .seccion-login {
     display: flex;
@@ -10,8 +94,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-image: url('recursos/fondo.jpg');
-    background-size: cover;
+    background-image: linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
     z-index: 1000;
 }
 
@@ -21,7 +104,11 @@
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     text-align: center;
-    width: 300px;
+    width: 320px;
+}
+
+.caja-login h2 {
+    margin-top: 0;
 }
 
 .caja-login input {
@@ -31,17 +118,156 @@
     border: 2px solid var(--rosa-principal);
     border-radius: 10px;
     font-size: 16px;
+    outline: none;
 }
 
 .caja-login button {
     width: 100%;
     padding: 12px;
     font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
+#btn-ingresar { background-color: var(--rosa-oscuro); }
+#btn-ingresar:hover { background-color: #c9628e; }
+#btn-registrar:hover { background-color: #ff7b81; }
+
 .error-msg {
-    color: red;
+    color: #ff4757;
     font-size: 14px;
-    margin-top: 10px;
+    margin-top: 15px;
     min-height: 20px;
+}
+
+/* ================================
+   ESTILOS GENERALES
+================================ */
+h2 {
+    color: var(--rosa-oscuro);
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+button {
+    background-color: var(--rosa-principal);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: var(--rosa-oscuro);
+}
+
+/* ================================
+   SECCIÓN: MENSAJES Y SERIES
+================================ */
+.caja-envio {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.caja-envio textarea {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--rosa-principal);
+    resize: none;
+    outline: none;
+}
+
+.mensaje-burbuja {
+    background-color: white;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--rosa-oscuro);
+}
+
+.controles-series {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.controles-series input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--rosa-principal);
+    width: 60%;
+    outline: none;
+}
+
+.categorias-series {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.categoria {
+    flex: 1;
+    background-color: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    min-height: 200px;
+}
+
+.categoria h3 {
+    text-align: center;
+    color: var(--rosa-oscuro);
+    border-bottom: 2px solid var(--fondo-app);
+    padding-bottom: 10px;
+}
+
+.lista-series {
+    list-style: none;
+    padding: 0;
+}
+
+.serie-item {
+    background-color: var(--fondo-app);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: grab;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.serie-item:hover {
+    background-color: #f7d6e0;
+}
+
+/* ================================
+   SECCIÓN: MÚSICA
+================================ */
+.btn-playlist {
+    display: inline-block;
+    background-color: var(--rosa-oscuro);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 5px 15px rgba(224, 123, 169, 0.4);
+    transition: 0.3s;
+}
+
+.btn-playlist:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(224, 123, 169, 0.6);
 }
