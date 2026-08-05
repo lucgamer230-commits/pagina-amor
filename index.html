@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucas y Vale</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
     
@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <!-- APP PRINCIPAL (Oculta hasta iniciar sesión) -->
+    <!-- APP PRINCIPAL -->
     <div id="app-principal" style="display: none;">
         <!-- Menú Principal -->
         <header>
@@ -40,10 +40,25 @@
 
         <main>
             <!-- 1. Sección de Moda / Armario Virtual -->
-            <section id="moda" class="activa">
+            <section id="moda">
                 <h2>Armario de Vale ✨</h2>
+
+                <!-- NUEVO: Probador de Combinaciones / Outfits -->
+                <div class="caja-probador" style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;">
+                    <h3 style="margin-top: 0; color: #e07ba9;">🪞 Probador de Outfits</h3>
+                    <p style="font-size: 13px; color: #777; margin-bottom: 15px;">Haz clic en cualquier prenda de tu clóset para probar cómo combina aquí:</p>
+                    
+                    <div id="contenedor-outfit">
+                        <div id="slot-chaqueta" class="slot-ropa"><span class="placeholder-slot">🧥 Sin chaqueta</span></div>
+                        <div id="slot-polera" class="slot-ropa"><span class="placeholder-slot">👕 Sin polera</span></div>
+                        <div id="slot-pantalones" class="slot-ropa"><span class="placeholder-slot">👖 Sin pantalón</span></div>
+                        <div id="slot-calcetines" class="slot-ropa"><span class="placeholder-slot">🧦 Sin calcetines</span></div>
+                    </div>
+                    
+                    <button id="btn-limpiar-outfit" style="margin-top: 15px; background-color: #ff6b6b;">Limpiar Probador 🧹</button>
+                </div>
                 
-                <!-- Panel para subir una nueva prenda -->
+                <!-- Panel para subir prendas -->
                 <div class="caja-subir-prenda" style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;">
                     <h3 style="margin-top: 0; color: #e07ba9;">Añadir Nueva Prenda</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
@@ -58,29 +73,24 @@
                     </div>
                 </div>
 
-                <!-- Secciones del Clóset para organizar y combinar -->
+                <!-- Categorías del Clóset -->
                 <div class="categorias-closet" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-                    
                     <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                         <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">👕 Poleras</h3>
                         <div class="grid-prendas" id="lista-polera" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
                     </div>
-
                     <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                         <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">👖 Pantalones</h3>
                         <div class="grid-prendas" id="lista-pantalones" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
                     </div>
-
                     <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                         <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">🧥 Chaquetas</h3>
                         <div class="grid-prendas" id="lista-chaqueta" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
                     </div>
-
                     <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                         <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">🧦 Calcetines</h3>
                         <div class="grid-prendas" id="lista-calcetines" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
                     </div>
-
                 </div>
             </section>
 
@@ -132,7 +142,7 @@
         </main>
     </div>
 
-    <!-- Firebase SDK (Asegúrate de incluir Storage, Auth y Firestore) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>

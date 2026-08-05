@@ -40,7 +40,7 @@ btnIngresar.addEventListener('click', () => {
     auth.signInWithEmailAndPassword(email, pass)
         .catch(error => {
             errorLogin.textContent = "Error: " + error.message;
-            console.error("Detalle técnico del error:", error);
+            console.error("Detalle técnico:", error);
         });
 });
 
@@ -59,16 +59,13 @@ btnRegistrar.addEventListener('click', () => {
     }
 
     auth.createUserWithEmailAndPassword(email, pass)
-        .then(() => {
-            console.log("¡Cuenta creada con éxito!");
-        })
         .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
                 errorLogin.textContent = "Ese correo ya está registrado. Intenta ingresar.";
             } else {
                 errorLogin.textContent = "Error al registrar: " + error.message;
             }
-            console.error("Detalle técnico del error:", error);
+            console.error("Detalle técnico:", error);
         });
 });
 
@@ -82,7 +79,7 @@ auth.onAuthStateChanged(user => {
         appPrincipal.style.display = 'block';
         cargarMensajesTiempoReal();
         cargarSeriesTiempoReal();
-        cargarClosetTiempoReal(); // Carga la ropa del armario
+        cargarClosetTiempoReal();
     } else {
         pantallaLogin.style.display = 'flex';
         appPrincipal.style.display = 'none';
@@ -116,16 +113,16 @@ enlacesMenu.forEach(enlace => {
 mostrarSeccion('moda');
 
 /* ================================
-   SECCIÓN: MODA / ARMARIO VIRTUAL
+   SECCIÓN: MODA Y PROBADOR (Con ImgBB)
 ================================ */
 const btnSubirPrenda = document.getElementById('btn-subir-prenda');
 const inputFotoPrenda = document.getElementById('subir-foto-prenda');
 const selectCategoria = document.getElementById('categoria-prenda');
+const btnLimpiarOutfit = document.getElementById('btn-limpiar-outfit');
 
 function cargarClosetTiempoReal() {
     db.collection('closet').orderBy('timestamp', 'desc')
       .onSnapshot(snapshot => {
-          // Limpiar todas las listas visuales antes de renderizar
           document.getElementById('lista-polera').innerHTML = '';
           document.getElementById('lista-pantalones').innerHTML = '';
           document.getElementById('lista-chaqueta').innerHTML = '';
@@ -144,10 +141,10 @@ function cargarClosetTiempoReal() {
                   imgPrenda.style.borderRadius = "10px";
                   imgPrenda.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
                   imgPrenda.style.cursor = "pointer";
-                  
-                  // Efecto visual al hacer clic para comparar o detallar
+                  imgPrenda.title = "Haz clic para probar esta prenda";
+
                   imgPrenda.addEventListener('click', () => {
-                      window.open(data.imagenUrl, '_blank');
+                      probarPrenda(data.imagenUrl, data.categoria);
                   });
 
                   contenedorCategoria.appendChild(imgPrenda);
@@ -156,34 +153,75 @@ function cargarClosetTiempoReal() {
       });
 }
 
+function probarPrenda(url, categoria) {
+    const slot = document.getElementById('slot-' + categoria);
+    if (slot) {
+        slot.innerHTML = `<img src="${url}" style="width: 110px; height: 110px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">`;
+    }
+}
+
+btnLimpiarOutfit.addEventListener('click', () => {
+    document.getElementById('slot-chaqueta').innerHTML = '<span class="placeholder-slot">🧥 Sin chaqueta</span>';
+    document.getElementById('slot-polera').innerHTML = '<span class="placeholder-slot">👕 Sin polera</span>';
+    document.getElementById('slot-pantalones').innerHTML = '<span class="placeholder-slot">👖 Sin pantalón</span>';
+    document.getElementById('slot-calcetines').innerHTML = '<span class="placeholder-slot">🧦 Sin calcetines</span>';
+});
+
+// NUEVO: Subir foto combinando ImgBB y Firebase Firestore
 btnSubirPrenda.addEventListener('click', () => {
     const archivo = inputFotoPrenda.files[0];
     const categoria = selectCategoria.value;
 
-    if (archivo) {
-        const nombreArchivo = 'closet/' + Date.now() + '_' + archivo.name;
-        const archivoRef = storageRef.child(nombreArchivo);
-
-        archivoRef.put(archivo)
-            .then(snapshot => snapshot.ref.getDownloadURL())
-            .then(downloadURL => {
-                return db.collection('closet').add({
-                    imagenUrl: downloadURL,
-                    categoria: categoria,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            })
-            .then(() => {
-                inputFotoPrenda.value = "";
-                alert("¡Prenda guardada en el clóset con éxito! 💖");
-            })
-            .catch(error => {
-                console.error("Error al subir la prenda: ", error);
-                alert("Hubo un error al subir la foto: " + error.message);
-            });
-    } else {
+    if (!archivo) {
         alert("¡Primero selecciona una foto de la prenda!");
+        return;
     }
+
+    // Cambiamos el texto del botón para saber que está cargando
+    btnSubirPrenda.textContent = "Subiendo foto... ⏳";
+    btnSubirPrenda.disabled = true;
+
+    // PREPARAR LA FOTO PARA IMGBB
+    const formData = new FormData();
+    formData.append("image", archivo);
+    
+    // AQUÍ ESTÁ TU CLAVE DE IMGBB INSERTADA:
+    const apiKey = "5063033a8dedc4f6d6858268c16f1516"; 
+
+    // 1. Enviar la foto a ImgBB
+    fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // ImgBB nos da el Link público de la foto
+            const imageUrl = data.data.url;
+            
+            // 2. Guardamos ese Link en Firebase
+            return db.collection('closet').add({
+                imagenUrl: imageUrl,
+                categoria: categoria,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } else {
+            throw new Error("ImgBB rechazó la imagen.");
+        }
+    })
+    .then(() => {
+        inputFotoPrenda.value = "";
+        alert("¡Prenda guardada en el clóset con éxito! 💖");
+    })
+    .catch(error => {
+        console.error("Error al subir la prenda: ", error);
+        alert("Hubo un error al guardar la foto.");
+    })
+    .finally(() => {
+        // Restaurar el botón a la normalidad
+        btnSubirPrenda.textContent = "Guardar en el Clóset";
+        btnSubirPrenda.disabled = false;
+    });
 });
 
 /* ================================

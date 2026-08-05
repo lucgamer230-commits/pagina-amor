@@ -83,6 +83,44 @@ header {
 }
 
 /* ================================
+   PROBADOR DE OUTFITS
+================================ */
+#contenedor-outfit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 280px;
+    margin: 0 auto;
+    background: #fff0f5;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px dashed #ff9a9e;
+    min-height: 300px;
+    justify-content: center;
+}
+
+.slot-ropa {
+    width: 100%;
+    min-height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px dashed #ffd1dc;
+    padding-bottom: 8px;
+}
+
+.slot-ropa:last-child {
+    border-bottom: none;
+}
+
+.placeholder-slot {
+    font-size: 13px;
+    color: #bbb;
+    font-style: italic;
+}
+
+/* ================================
    PANTALLA DE LOGIN
 ================================ */
 .seccion-login {
