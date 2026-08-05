@@ -28,49 +28,75 @@
         <header>
             <nav>
                 <ul class="menu-principal">
-                    <li><a href="#galeria" class="nav-link">Galería</a></li>
-                    <li><a href="#mensajes" class="nav-link">Mensajes</a></li>
-                    <li><a href="#series" class="nav-link">Series</a></li>
+                    <li><a href="#moda" class="nav-link">Moda 👗</a></li>
+                    <li><a href="#mensajes" class="nav-link">Mensajes 💌</a></li>
+                    <li><a href="#series" class="nav-link">Series 🍿</a></li>
+                    <li><a href="#musica" class="nav-link">Música 🎵</a></li>
                     
-                    <!-- Submenú de Música -->
-                    <li class="submenu">
-                        <span>🎵 Música</span>
-                        <div class="reproductor-desplegable">
-                            <p style="text-align:center; color:#e07ba9; font-weight:bold; margin-top:0; margin-bottom: 15px;">
-                                Nuestra Playlist 💖
-                            </p>
-                            <a href="https://youtube.com/playlist?list=PLRA6qU-Hu8DYQU_J6z512AHgJngHhRVWW" target="_blank" style="display: block; background-color: #f994c5; color: white; text-align: center; padding: 10px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.3s;">
-                                Abrir en YouTube ▶️
-                            </a>
-                        </div>
-                    </li>
-                    <li id="btn-salir" style="background-color: #ff6b6b;"><span>Salir 👋</span></li>
+                    <li id="btn-salir" class="btn-salir-menu">Salir 👋</li>
                 </ul>
             </nav>
         </header>
 
         <main>
-            <!-- Sección de Galería -->
-            <section id="galeria">
-                <h2>Nuestras Fotos</h2>
-                <input type="file" id="subir-foto" accept="image/*">
-                <button id="btn-subir">Subir Foto</button>
-                <div class="contenedor-fotos"></div>
-                <p style="font-size: 12px; color: gray; text-align: center;">Las fotos se guardan temporalmente en tu dispositivo.</p>
+            <!-- 1. Sección de Moda / Armario Virtual -->
+            <section id="moda" class="activa">
+                <h2>Armario de Vale ✨</h2>
+                
+                <!-- Panel para subir una nueva prenda -->
+                <div class="caja-subir-prenda" style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;">
+                    <h3 style="margin-top: 0; color: #e07ba9;">Añadir Nueva Prenda</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
+                        <select id="categoria-prenda" style="padding: 10px; border-radius: 8px; border: 2px solid #ff9a9e; outline: none;">
+                            <option value="polera">Polera / Top</option>
+                            <option value="pantalones">Pantalones</option>
+                            <option value="chaqueta">Chaqueta / Abrigo</option>
+                            <option value="calcetines">Calcetines / Accesorios</option>
+                        </select>
+                        <input type="file" id="subir-foto-prenda" accept="image/*">
+                        <button id="btn-subir-prenda">Guardar en el Clóset</button>
+                    </div>
+                </div>
+
+                <!-- Secciones del Clóset para organizar y combinar -->
+                <div class="categorias-closet" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                    
+                    <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">👕 Poleras</h3>
+                        <div class="grid-prendas" id="lista-polera" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
+                    </div>
+
+                    <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">👖 Pantalones</h3>
+                        <div class="grid-prendas" id="lista-pantalones" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
+                    </div>
+
+                    <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">🧥 Chaquetas</h3>
+                        <div class="grid-prendas" id="lista-chaqueta" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
+                    </div>
+
+                    <div class="categoria-ropa" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color: #e07ba9; text-align: center; border-bottom: 2px solid #fff0f5; padding-bottom: 8px;">🧦 Calcetines</h3>
+                        <div class="grid-prendas" id="lista-calcetines" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 120px;"></div>
+                    </div>
+
+                </div>
             </section>
 
-            <!-- Sección de Mensajes -->
+            <!-- 2. Sección de Mensajes -->
             <section id="mensajes">
-                <h2>Buzón de Mensajes</h2>
-                <textarea id="nuevo-mensaje" placeholder="Deja un mensaje..."></textarea>
-                <button id="btn-enviar">Enviar</button>
+                <h2>Buzón de Mensajes 💌</h2>
+                <div class="caja-envio">
+                    <textarea id="nuevo-mensaje" placeholder="Deja un mensaje bonito..."></textarea>
+                    <button id="btn-enviar">Enviar</button>
+                </div>
                 <div class="lista-mensajes" id="lista-mensajes"></div>
             </section>
 
-            <!-- Sección de Series -->
+            <!-- 3. Sección de Series -->
             <section id="series">
-                <h2>Nuestras Series</h2>
-                
+                <h2>Nuestras Series 🍿</h2>
                 <div class="controles-series">
                     <input type="text" id="nueva-serie" placeholder="Nombre de la serie...">
                     <button id="btn-agregar-serie">Agregar</button>
@@ -82,7 +108,7 @@
                         <ul class="lista-series" id="lista-por-ver"></ul>
                     </div>
                     <div class="categoria" id="viendo">
-                        <h3>Viendo / No Completadas</h3>
+                        <h3>Viendo</h3>
                         <ul class="lista-series" id="lista-viendo"></ul>
                     </div>
                     <div class="categoria" id="completadas">
@@ -91,13 +117,26 @@
                     </div>
                 </div>
             </section>
+
+            <!-- 4. Sección de Música -->
+            <section id="musica">
+                <h2>Nuestra Música 🎵</h2>
+                <div style="text-align: center; margin-top: 40px;">
+                    <p style="font-size: 18px; color: #555;">Nuestra playlist especial 💖</p>
+                    <br>
+                    <a href="https://youtube.com/playlist?list=PLRA6qU-Hu8DYQU_J6z512AHgJngHhRVWW" target="_blank" class="btn-playlist">
+                        Abrir Playlist en YouTube ▶️
+                    </a>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- Firebase SDK (Librerías oficiales) -->
+    <!-- Firebase SDK (Asegúrate de incluir Storage, Auth y Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
 
     <script src="script.js"></script>
 </body>

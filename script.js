@@ -14,6 +14,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storageRef = firebase.storage().ref();
 
 /* ================================
    SISTEMA DE LOGIN Y REGISTRO
@@ -23,11 +24,10 @@ const appPrincipal = document.getElementById('app-principal');
 const emailLogin = document.getElementById('email-login');
 const passLogin = document.getElementById('pass-login');
 const btnIngresar = document.getElementById('btn-ingresar');
-const btnRegistrar = document.getElementById('btn-registrar'); // Botón de registro
+const btnRegistrar = document.getElementById('btn-registrar');
 const errorLogin = document.getElementById('error-login');
 const btnSalir = document.getElementById('btn-salir');
 
-// Función para Ingresar
 btnIngresar.addEventListener('click', () => {
     const email = emailLogin.value.trim();
     const pass = passLogin.value.trim();
@@ -44,7 +44,6 @@ btnIngresar.addEventListener('click', () => {
         });
 });
 
-// Función para Registrarse
 btnRegistrar.addEventListener('click', () => {
     const email = emailLogin.value.trim();
     const pass = passLogin.value.trim();
@@ -73,18 +72,17 @@ btnRegistrar.addEventListener('click', () => {
         });
 });
 
-// Función para Salir
 btnSalir.addEventListener('click', () => {
     auth.signOut();
 });
 
-// Vigilar si hay alguien conectado
 auth.onAuthStateChanged(user => {
     if (user) {
         pantallaLogin.style.display = 'none';
         appPrincipal.style.display = 'block';
         cargarMensajesTiempoReal();
         cargarSeriesTiempoReal();
+        cargarClosetTiempoReal(); // Carga la ropa del armario
     } else {
         pantallaLogin.style.display = 'flex';
         appPrincipal.style.display = 'none';
@@ -115,7 +113,78 @@ enlacesMenu.forEach(enlace => {
         mostrarSeccion(id);
     });
 });
-mostrarSeccion('galeria');
+mostrarSeccion('moda');
+
+/* ================================
+   SECCIÓN: MODA / ARMARIO VIRTUAL
+================================ */
+const btnSubirPrenda = document.getElementById('btn-subir-prenda');
+const inputFotoPrenda = document.getElementById('subir-foto-prenda');
+const selectCategoria = document.getElementById('categoria-prenda');
+
+function cargarClosetTiempoReal() {
+    db.collection('closet').orderBy('timestamp', 'desc')
+      .onSnapshot(snapshot => {
+          // Limpiar todas las listas visuales antes de renderizar
+          document.getElementById('lista-polera').innerHTML = '';
+          document.getElementById('lista-pantalones').innerHTML = '';
+          document.getElementById('lista-chaqueta').innerHTML = '';
+          document.getElementById('lista-calcetines').innerHTML = '';
+
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              const contenedorCategoria = document.getElementById('lista-' + data.categoria);
+              
+              if (contenedorCategoria) {
+                  const imgPrenda = document.createElement('img');
+                  imgPrenda.src = data.imagenUrl;
+                  imgPrenda.style.width = "80px";
+                  imgPrenda.style.height = "80px";
+                  imgPrenda.style.objectFit = "cover";
+                  imgPrenda.style.borderRadius = "10px";
+                  imgPrenda.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
+                  imgPrenda.style.cursor = "pointer";
+                  
+                  // Efecto visual al hacer clic para comparar o detallar
+                  imgPrenda.addEventListener('click', () => {
+                      window.open(data.imagenUrl, '_blank');
+                  });
+
+                  contenedorCategoria.appendChild(imgPrenda);
+              }
+          });
+      });
+}
+
+btnSubirPrenda.addEventListener('click', () => {
+    const archivo = inputFotoPrenda.files[0];
+    const categoria = selectCategoria.value;
+
+    if (archivo) {
+        const nombreArchivo = 'closet/' + Date.now() + '_' + archivo.name;
+        const archivoRef = storageRef.child(nombreArchivo);
+
+        archivoRef.put(archivo)
+            .then(snapshot => snapshot.ref.getDownloadURL())
+            .then(downloadURL => {
+                return db.collection('closet').add({
+                    imagenUrl: downloadURL,
+                    categoria: categoria,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            })
+            .then(() => {
+                inputFotoPrenda.value = "";
+                alert("¡Prenda guardada en el clóset con éxito! 💖");
+            })
+            .catch(error => {
+                console.error("Error al subir la prenda: ", error);
+                alert("Hubo un error al subir la foto: " + error.message);
+            });
+    } else {
+        alert("¡Primero selecciona una foto de la prenda!");
+    }
+});
 
 /* ================================
    MENSAJES EN LA NUBE (FIRESTORE)
@@ -153,7 +222,7 @@ btnEnviar.addEventListener('click', () => {
 /* ================================
    SERIES EN LA NUBE (FIRESTORE)
 ================================ */
-const btnAgregarSerie = document.getElementById('btn-agregar-serie');
+const btnAgregarSerie = document.getElementById('btn-agregar-serie');	
 const inputSerie = document.getElementById('nueva-serie');
 const categorias = document.querySelectorAll('.categoria');
 let cargandoSeries = false; 
@@ -223,30 +292,4 @@ categorias.forEach(categoria => {
             guardarSeriesEnNube(); 
         }
     });
-});
-
-/* ================================
-   GALERÍA DE FOTOS (LOCAL TEMPORAL)
-================================ */
-const btnSubir = document.getElementById('btn-subir');
-const inputFoto = document.getElementById('subir-foto');
-const contenedorFotos = document.querySelector('.contenedor-fotos');
-
-btnSubir.addEventListener('click', () => {
-    const archivo = inputFoto.files[0];
-    if (archivo) {
-        const lector = new FileReader();
-        lector.onload = function(e) {
-            const nuevaImg = document.createElement('img');
-            nuevaImg.src = e.target.result;
-            nuevaImg.style.width = "200px";
-            nuevaImg.style.borderRadius = "10px";
-            nuevaImg.style.margin = "10px";
-            nuevaImg.style.boxShadow = "0 4px 8px rgba(0,0,0,0.2)";
-            contenedorFotos.appendChild(nuevaImg);
-        }
-        lector.readAsDataURL(archivo);
-    } else {
-        alert("¡Primero selecciona una foto!");
-    }
 });
